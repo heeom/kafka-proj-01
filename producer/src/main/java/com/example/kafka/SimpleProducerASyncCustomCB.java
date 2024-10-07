@@ -28,23 +28,13 @@ public class SimpleProducerASyncCustomCB {
         KafkaProducer<Integer, String> producer = new KafkaProducer<>(props);
         for (int seq = 0; seq < 20; seq++) {
 
-        // ProducerRecord 객체 생성
+            // ProducerRecord 객체 생성
             ProducerRecord<Integer, String> producerRecord = new ProducerRecord<>(topic, seq, "Hello World" + seq);
-
+            CustomCallback customCallback = new CustomCallback(seq);
 
             // KafkaProducer message send
-
-
-                producer.send(producerRecord, (metadata, exception) -> {
-                    if (exception == null) {
-                        log.info("partition : {}, \n " +
-                                "offset, {}", metadata.partition(), metadata.offset());
-                    } else {
-                        log.error("error ", exception);
-                    }
-                });
+            producer.send(producerRecord, customCallback);
         }
-
 
         try {
             Thread.sleep(3000);
